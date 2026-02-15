@@ -4,6 +4,8 @@ import { getStudentsByFamilyId } from "@/lib/sharepoint";
 import { mapFromSharePoint, STUDENT_FIELD_MAP } from "@/lib/field-maps";
 import { Student } from "@/types/student";
 import { StudentCard } from "@/components/student-card";
+import Link from "next/link";
+import { UserPlus } from "lucide-react";
 
 export default async function StudentsPage() {
   const session = await getSession();
@@ -18,11 +20,20 @@ export default async function StudentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Students</h1>
-        <p className="text-muted-foreground">
-          View and edit your child&apos;s details
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Students</h1>
+          <p className="text-muted-foreground">
+            View and edit your child&apos;s details
+          </p>
+        </div>
+        <Link
+          href="/dashboard/students/enroll"
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+        >
+          <UserPlus className="h-4 w-4" />
+          Enroll Sibling
+        </Link>
       </div>
 
       {students.length === 0 ? (
