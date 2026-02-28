@@ -58,34 +58,44 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Filter to only allowed enrollment fields
-  const filtered = Object.fromEntries(
-    Object.entries(body).filter(([key]) => ENROLL_FIELDS.includes(key))
-  );
+  try {
+    // Filter to only allowed enrollment fields
+    const filtered = Object.fromEntries(
+      Object.entries(body).filter(([key]) => ENROLL_FIELDS.includes(key))
+    );
 
-  // Add full name
-  const fullName = [filtered.firstName, filtered.middleName, filtered.lastName]
-    .filter(Boolean)
-    .join(" ");
+    // Add full name
+    const fullName = [filtered.firstName, filtered.middleName, filtered.lastName]
+      .filter(Boolean)
+      .join(" ");
 
-  const spFields = mapToSharePoint(
-    { ...filtered, fullName },
-    STUDENT_FIELD_MAP
-  );
+    const spFields = mapToSharePoint(
+      { ...filtered, fullName },
+      STUDENT_FIELD_MAP
+    );
 
-  // Link to the parent's family via the lookup field
-  spFields["s_f_IDLookupId"] = session.familyId;
+    // Set Title (required by SharePoint) to the student's full name
+    spFields["Title"] = fullName;
 
-  // Set default enrollment status
-  spFields["field_21"] = "Pending";
+    // Link to the parent's family via the lookup field (must be numeric)
+    spFields["s_f_IDLookupId"] = Number(session.familyId);
 
-  const created = await createListItem(
-    process.env.STUDENTS_LIST_ID!,
-    spFields
-  );
+    // Set default enrollment status
+    spFields["field_21"] = "Pending";
 
-  return NextResponse.json(
-    { success: true, id: created.id },
-    { status: 201 }
-  );
+    const created = await createListItem(
+      process.env.STUDENTS_LIST_ID!,
+      spFields
+    );
+
+    return NextResponse.json(
+      { success: true, id: created.id },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("POST /api/students error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to create student record.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
