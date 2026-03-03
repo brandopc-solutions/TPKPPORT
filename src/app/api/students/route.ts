@@ -69,10 +69,14 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join(" ");
 
-    const spFields = mapToSharePoint(
-      { ...filtered, fullName },
-      STUDENT_FIELD_MAP
+    // Remove empty strings — SharePoint Choice/Yes-No fields reject them
+    const nonEmpty = Object.fromEntries(
+      Object.entries({ ...filtered, fullName }).filter(
+        ([, v]) => v !== "" && v != null
+      )
     );
+
+    const spFields = mapToSharePoint(nonEmpty, STUDENT_FIELD_MAP);
 
     // Set Title (required by SharePoint) to the student's full name
     spFields["Title"] = fullName;

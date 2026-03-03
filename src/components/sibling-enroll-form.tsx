@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,8 +90,6 @@ export function SiblingEnrollForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<EnrollFormData>(emptyForm);
-  const dobPickerRef = useRef<HTMLInputElement>(null);
-
   const updateField = (field: keyof EnrollFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -191,12 +189,10 @@ export function SiblingEnrollForm() {
                 <Input
                   value={formatDateAEST(formData.dateOfBirth)}
                   readOnly
-                  onClick={() => dobPickerRef.current?.showPicker()}
                   className="cursor-pointer"
                   placeholder="Select date"
                 />
                 <input
-                  ref={dobPickerRef}
                   type="date"
                   aria-label="Date of Birth"
                   value={
@@ -205,8 +201,7 @@ export function SiblingEnrollForm() {
                       : ""
                   }
                   onChange={(e) => updateField("dateOfBirth", e.target.value)}
-                  className="sr-only"
-                  tabIndex={-1}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   required
                 />
               </div>

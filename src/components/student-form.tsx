@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,8 +59,6 @@ export function StudentForm({ student, allowEdit = true }: StudentFormProps) {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState(student);
-  const dobPickerRef = useRef<HTMLInputElement>(null);
-
   const readOnly = !editing;
 
   const updateField = (field: keyof Student, value: string) => {
@@ -168,19 +166,16 @@ export function StudentForm({ student, allowEdit = true }: StudentFormProps) {
                 <Input
                   value={formatDateAEST(formData.dateOfBirth)}
                   disabled={readOnly}
-                  readOnly={!readOnly}
-                  onClick={() => !readOnly && dobPickerRef.current?.showPicker()}
+                  readOnly
                   className={!readOnly ? "cursor-pointer" : ""}
                 />
                 {!readOnly && (
                   <input
-                    ref={dobPickerRef}
                     type="date"
                     aria-label="Date of Birth"
                     value={toIsoDateAEST(formData.dateOfBirth)}
                     onChange={(e) => updateField("dateOfBirth", e.target.value)}
-                    className="sr-only"
-                    tabIndex={-1}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   />
                 )}
               </div>
