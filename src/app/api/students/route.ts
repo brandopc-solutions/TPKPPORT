@@ -64,21 +64,21 @@ export async function POST(request: NextRequest) {
       Object.entries(body).filter(([key]) => ENROLL_FIELDS.includes(key))
     );
 
-    // Add full name
+    // Build full name for Title field
     const fullName = [filtered.firstName, filtered.middleName, filtered.lastName]
       .filter(Boolean)
       .join(" ");
 
     // Remove empty strings — SharePoint Choice/Yes-No fields reject them
     const nonEmpty = Object.fromEntries(
-      Object.entries({ ...filtered, fullName }).filter(
+      Object.entries(filtered).filter(
         ([, v]) => v !== "" && v != null
       )
     );
 
     const spFields = mapToSharePoint(nonEmpty, STUDENT_FIELD_MAP);
 
-    // Set Title (required by SharePoint) to the student's full name
+    // Set Title (required by SharePoint) — don't set s_FullName as it's read-only
     spFields["Title"] = fullName;
 
     // Link to the parent's family via the lookup field (must be numeric)
