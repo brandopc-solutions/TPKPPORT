@@ -201,6 +201,9 @@ export function SiblingEnrollForm() {
                       : ""
                   }
                   onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                  onClick={(e) => {
+                    try { (e.target as HTMLInputElement).showPicker(); } catch {}
+                  }}
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   required
                 />

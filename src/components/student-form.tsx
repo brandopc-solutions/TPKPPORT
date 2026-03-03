@@ -175,6 +175,9 @@ export function StudentForm({ student, allowEdit = true }: StudentFormProps) {
                     aria-label="Date of Birth"
                     value={toIsoDateAEST(formData.dateOfBirth)}
                     onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                    onClick={(e) => {
+                      try { (e.target as HTMLInputElement).showPicker(); } catch {}
+                    }}
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   />
                 )}

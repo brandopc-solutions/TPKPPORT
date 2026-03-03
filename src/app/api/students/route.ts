@@ -96,10 +96,22 @@ export async function POST(request: NextRequest) {
       { success: true, id: created.id },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
+    // Extract Graph API error details if available
+    const graphBody = (error as { body?: string })?.body;
+    let detail = "";
+    if (graphBody) {
+      try {
+        const parsed = JSON.parse(graphBody);
+        detail = parsed?.error?.message || graphBody;
+      } catch {
+        detail = graphBody;
+      }
+    }
     console.error("POST /api/students error:", error);
+    if (detail) console.error("Graph API detail:", detail);
     const message =
-      error instanceof Error ? error.message : "Failed to create student record.";
+      detail || (error instanceof Error ? error.message : "Failed to create student record.");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
